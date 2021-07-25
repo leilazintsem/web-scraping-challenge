@@ -3,60 +3,62 @@ from bs4 import BeautifulSoup
 from splinter import Browser
 import pandas as pd
 
-#Chrome driver set up
 
-executable_path = {"executable_path":"driver\chromedriver.exe"}
-browser = Browser("chrome", **executable_path, headless=False)
+def scrape():
+    #Chrome driver set up
 
-#Connecting to NASA site
-url = "https://redplanetscience.com"
-browser.visit(url)
+    executable_path = {"executable_path":"driver\chromedriver.exe"}
+    browser = Browser("chrome", **executable_path, headless=False)
 
-# Parse Results HTML with BeautifulSoup
+    #Connecting to NASA site
+    url = "https://redplanetscience.com"
+    browser.visit(url)
 
-html = browser.html
-news = BeautifulSoup(html, "html.parser")
+    # Parse Results HTML with BeautifulSoup
 
-# let's get the news title and paragraph 
-news_title = news.select_one('.col-md-8 .content_title').get_text()
-news_p = news.select_one('.col-md-8 .article_teaser_body').get_text()
+    html = browser.html
+    news = BeautifulSoup(html, "html.parser")
 
-
-# get the feature image
-url = "https://spaceimages-mars.com"
-browser.visit(url)
-
-html = browser.html
-images = BeautifulSoup(html, "html.parser")
-
-featured_image = url+"/"+ images.select_one('.headerimage')["src"]
+    # let's get the news title and paragraph 
+    news_title = news.select_one('.col-md-8 .content_title').get_text()
+    news_p = news.select_one('.col-md-8 .article_teaser_body').get_text()
 
 
+    # get the feature image
+    url = "https://spaceimages-mars.com"
+    browser.visit(url)
 
-#Use Pandas to convert the data to a HTML table string
-table_string = []
-url = "https://galaxyfacts-mars.com"
-df_list = pd.read_html(url)
-table= df_list
-for x in df_list:
-    table_string.append(x.to_html)
-    
-    #Append the dictionary with the image url string and the hemisphere title to a list. This list will contain one dictionary for each hemisphere.
-data = []
+    html = browser.html
+    images = BeautifulSoup(html, "html.parser")
 
-url = "https://marshemispheres.com"
-browser.visit(url)
-html = browser.html
-bs = BeautifulSoup(html, "html.parser")
-links = bs.select('.description>a')
-for link in links:
-    title = link.get_text()
-    href=link["href"]
-    browser.visit(url+"/"+ href)
-    html1 = browser.html
-    details_page = BeautifulSoup(html1, "html.parser")
-    full_image = details_page.select_one('img.wide-image')
-    data.append({
-        "title": title, 
-        "img_url": url + "/" + full_image["src"]
-    })
+    featured_image = url+"/"+ images.select_one('.headerimage')["src"]
+
+
+
+    #Use Pandas to convert the data to a HTML table string
+    table_string = []
+    url = "https://galaxyfacts-mars.com"
+    df_list = pd.read_html(url)
+    table= df_list
+    for x in df_list:
+        table_string.append(x.to_html)
+        
+        #Append the dictionary with the image url string and the hemisphere title to a list. This list will contain one dictionary for each hemisphere.
+    data = []
+
+    url = "https://marshemispheres.com"
+    browser.visit(url)
+    html = browser.html
+    bs = BeautifulSoup(html, "html.parser")
+    links = bs.select('.description>a')
+    for link in links:
+        title = link.get_text()
+        href=link["href"]
+        browser.visit(url+"/"+ href)
+        html1 = browser.html
+        details_page = BeautifulSoup(html1, "html.parser")
+        full_image = details_page.select_one('img.wide-image')
+        data.append({
+            "title": title, 
+            "img_url": url + "/" + full_image["src"]
+        })
