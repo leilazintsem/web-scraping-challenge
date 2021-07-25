@@ -36,12 +36,9 @@ def scrape():
 
 
     #Use Pandas to convert the data to a HTML table string
-    table_string = []
     url = "https://galaxyfacts-mars.com"
     df_list = pd.read_html(url)
-    table= df_list
-    for x in df_list:
-        table_string.append(x.to_html)
+    table_string = df_list[0].to_html().strip()
         
         #Append the dictionary with the image url string and the hemisphere title to a list. This list will contain one dictionary for each hemisphere.
     data = []
@@ -61,4 +58,14 @@ def scrape():
         data.append({
             "title": title, 
             "img_url": url + "/" + full_image["src"]
+    
         })
+    return {
+        "latest_news": {
+            "news_title": news_title, 
+            "news_p": news_p
+        },
+        "featured_image": featured_image,
+        "facts":  table_string,
+        "hemispheres": data
+    }
